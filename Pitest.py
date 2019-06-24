@@ -141,7 +141,7 @@ def HC_SR04_Module(stdscr, previous_menu):
     print_title(stdscr, "HC_SR04")
     stdscr.attroff(curses.color_pair(2))
 
-    stdscr.addstr(h - 1, 0, "Press Control q to exit test")
+    stdscr.addstr(h - 1, 0, "Press Control c to exit test")
 
     stdscr.attron(curses.color_pair(3))
     stdscr.addstr(0, 0, HCMenu[previous_menu])
@@ -158,9 +158,17 @@ def HC_SR04_Module(stdscr, previous_menu):
     GPIO.setup(Trig, GPIO.OUT)
     GPIO.setup(Echo, GPIO.IN)
 
+    GPIO.output(Trig, False)
+    h, w = get_terminal_yx(stdscr, h, w)
+    x = w //2 - len("Waiting for sensor to settle...")//2
+    y = h//2
+    stdscr.attron(curses.color_pair(1))
+    stdscr.addstr(y, x, "Waiting for sensor to settle...")
+    stdscr.attroff(curses.color_pair(1))
+    stdscr.refresh()
+    time.sleep(2)
     while 1:
 
-        time.sleep(0.2)
         stdscr.clear()
         h = 0
         w = 0
@@ -176,7 +184,7 @@ def HC_SR04_Module(stdscr, previous_menu):
         while GPIO.input(Echo) == 1:
             End = time.time()
 
-        distance = round((End - Start) * 340 * 100 / 2, 1)
+        distance = round((End - Start) * 17150, 2)
 
         if distance < 10:
 
@@ -204,8 +212,7 @@ def HC_SR04_Module(stdscr, previous_menu):
             y = h // 2
             stdscr.addstr(y, x, str)
             stdscr.attroff(curses.color_pair(4))
-
-        stdscr.addstr(h - 1, 0, "Press Control q to exit test")
+        stdscr.addstr(h - 1, 0, "Press Control c to exit test")
         stdscr.addstr(6, 0, "Trig (Transmitter) -->{}".format(Trig))
         stdscr.addstr(7, 0, "Echo (Receiver) -->{}".format(Echo))
 
@@ -216,7 +223,7 @@ def HC_SR04_Module(stdscr, previous_menu):
         stdscr.attron(curses.color_pair(2))
         print_title(stdscr, "HC_SR04")
         stdscr.attroff(curses.color_pair(2))
-
+        time.sleep(1)
         stdscr.refresh()
 
 
